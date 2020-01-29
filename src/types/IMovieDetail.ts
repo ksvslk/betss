@@ -1,11 +1,11 @@
 export interface IMovieDetail {
-    title: string
-    year: string
-    type: string
-    poster: string
-    plot: string
-    imdbRating: string
-    runTime: string
-    genre: string
+    Title?: string
+    Year?: string
+    Type?: string
+    Poster?: string
+    Plot?: string
+    imdbRating?: string
+    Runtime?: string
+    Genre?: string
   }
   

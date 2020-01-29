@@ -1,4 +1,4 @@
-import { AppState, AppActions, Loaded, Fetching, LoadedMore } from "./types"
+import { AppState, AppActions, Loaded, Fetching, LoadedMore, FetchingDetails, LoadedDetails } from "./types"
 import { ACTION_TYPE } from "./actions"
 import { IMovieResult } from "../types/IMovieResult"
 import { IResult } from "../types/IResult"
@@ -7,8 +7,18 @@ export const initialState: AppState = {
     loadingSearch: false,
     loadingMoreResults: false,
     loadingDetails: false,
+    detailMovieID: '',
     moviesSearchResult: [],
-    detailPageState: undefined,
+    detailPageState: {
+        Title: '',
+        Year: '',
+        Type: '',
+        Poster: '',
+        Plot: '',
+        imdbRating: '',
+        Runtime: '',
+        Genre: '',
+    },
     currentSearchPageNumber: 1,
     currentSearchKeyWord: '',
     totalPagesCount: 0,
@@ -20,6 +30,7 @@ export const appState = (
 ) => {
 
     const updatedState: AppState = {
+        detailMovieID: state.detailMovieID,
         loadingSearch: state.loadingSearch,
         loadingMoreResults: state.loadingMoreResults,
         loadingDetails: state.loadingDetails,
@@ -52,6 +63,24 @@ export const appState = (
             const arr: IMovieResult[] | undefined = (action as LoadedMore).movies
             updatedState.moviesSearchResult?.push(...arr ?? [])
             return updatedState
+         case ACTION_TYPE.FETCHING_DETAILS:
+            updatedState.loadingDetails = true
+            updatedState.detailPageState = {
+                Title: '',
+                Year: '',
+                Type: '',
+                Poster: '',
+                Plot: '',
+                imdbRating: '',
+                Runtime: '',
+                Genre: '',
+            }
+            updatedState.detailMovieID = (action as FetchingDetails).imdbID
+            return updatedState
+         case ACTION_TYPE.LOADED_DETAILS:
+                updatedState.loadingDetails = false
+                updatedState.detailPageState = (action as LoadedDetails).details
+                return updatedState
         default:
             return state
     }

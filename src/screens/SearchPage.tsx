@@ -6,9 +6,10 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import MovieIcon from '@material-ui/icons/Movie';
 import store from '../redux/store';
-import { fetchingMoreAction, loadedMoreAction } from '../redux/actions';
+import { fetchingMoreAction, loadedMoreAction, fetchingDetailsAction } from '../redux/actions';
 import { container } from 'inversify-props';
 import { IMovieRepository } from '../repository/IMovieRepository';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -110,19 +111,26 @@ const fetchMoreResults = (keyword: string, pageNumber: number) => {
   repository.getSearchResults(keyword, pageNumber)
     .then((m) => {
       store.dispatch(loadedMoreAction(m?.movies))
-    }).finally(()=>{window.scrollTo(0, document.body.scrollHeight)})
+    }).finally(() => { window.scrollTo(0, document.body.scrollHeight) })
 }
-
 
 const SearchPage: React.FC = () => {
 
- 
+  let history = useHistory();
+
   const classes = useStyles();
   const state: AppState = useSelector(
     state => {
       return (state as AppState)
     }
   )
+  function navigateToDetails(imdbID: string) {
+    store.dispatch(fetchingDetailsAction(imdbID))
+    history.push({
+      pathname: '/details',
+      search: `?id=${imdbID}`
+    });
+  }
 
   function capitalizeFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -133,7 +141,7 @@ const SearchPage: React.FC = () => {
       {state.loadingSearch ? <CircularProgress className={classes.circ} /> :
         <List component="nav" className={classes.root}>
           {state.moviesSearchResult?.map(movie =>
-            <ListItem divider button key={movie.imdbID.toString()} alignItems="flex-start">
+            <ListItem onClick={() => navigateToDetails(movie.imdbID)} divider button key={movie.imdbID.toString()+Date.now()} alignItems="flex-start">
               <ListItemAvatar>
                 <Avatar alt="Poster" src={movie.Poster} />
               </ListItemAvatar>
@@ -160,11 +168,12 @@ const SearchPage: React.FC = () => {
       {state.loadingSearch !== true ?
         state.totalPagesCount === 0 || state.totalPagesCount === state.currentSearchPageNumber ? <p></p> :
           <Container>
-            {state.loadingMoreResults ? <LinearProgress variant="query" /> :
+            {state.loadingMoreResults ? <LinearProgress style={{ margin:25 }} variant="query" /> :
               <Button
                 onClick={() => fetchMoreResults(state.currentSearchKeyWord, state.currentSearchPageNumber)}
                 color="primary"
                 size="large"
+                variant="outlined"
                 className={classes.button}
                 startIcon={<MovieIcon />}
               >
@@ -176,8 +185,10 @@ const SearchPage: React.FC = () => {
         : <p></p>
       }
       <div>
-        {state.loadingSearch !== true ?
-          state.moviesSearchResult?.length === 0 || state.moviesSearchResult === undefined ? <img alt="No results" className={classes.imgResults} src={require('../img/empty-result_shot.png')} /> : <p></p>
+        {state.loadingSearch !== true
+          ? state.moviesSearchResult?.length === 0 || state.moviesSearchResult === undefined
+            ? <img alt="No results" className={classes.imgResults} src={require('../img/empty-result_shot.png')} />
+            : <p></p>
           : <p></p>}
       </div>
     </div>

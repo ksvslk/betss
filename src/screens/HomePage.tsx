@@ -99,9 +99,11 @@ const HomePage: React.FC = () => {
   }
 
   const searchByTitle = () => {
-    handleSearchNavigation()
-    fetchResultsAction(searchText, 1)
-    setSearchText('')
+    if(searchText.length >= 3) {
+      handleSearchNavigation()
+      fetchResultsAction(searchText, 1)
+      setSearchText('')
+    }
   }
 
   return (
