@@ -1,23 +1,37 @@
 import { IMovieResult } from "../types/IMovieResult"
 import { IMovieDetail } from "../types/IMovieDetail"
+import { IResult } from "../types/IResult"
 
 // biggest state object we handle
 export type AppState = {
+    loadingSearch: boolean
+    loadingMoreResults: boolean
+    loadingDetails: boolean
     detailPageState?: IMovieDetail
-    searchResultsState?: IMovieResult[]
+    moviesSearchResult?: IMovieResult[]
+    currentSearchPageNumber: number
+    currentSearchKeyWord: string
+    totalPagesCount: number
 }
 
 // action typess
-export type SearchMoviesAction = {
-    type: string
-    keyword: string
-    pageNumber: number
+
+export type Fetching = {
+    type:string,
+    keyword:string
+}
+export type FetchingMore = {
+    type:string,
+}
+export type Loaded = {
+    type:string,
+    result:IResult | undefined
 }
 
-export type GetMovieDetailsAction = {
-    type: string
-    imdbId: string
+export type LoadedMore = {
+    type:string,
+    movies:IMovieResult[] | undefined
 }
 
 // combined type of Actions
-export type AppMoviesActions = SearchMoviesAction | GetMovieDetailsAction;
+export type AppActions = Fetching | FetchingMore |Loaded | LoadedMore ;

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import '../css/App.css';
 import { useHistory } from 'react-router-dom';
 import { fade, makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -8,10 +7,11 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
-import '../css/App.css';
 import { SvgIcon, Button } from '@material-ui/core';
+import { fetchingAction, loadedAction } from '../redux/actions';
 import store from '../redux/store';
-import { getSearchResultsAction } from '../redux/actions';
+import { container } from 'inversify-props';
+import { IMovieRepository } from '../repository/IMovieRepository';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -76,6 +76,16 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+const fetchResultsAction = (keyword: string, pageNumber:number) => {
+  if(keyword.length >= 3) {
+    store.dispatch(fetchingAction(keyword))
+    const repository = container.get<IMovieRepository>('MovieRepository')
+    repository.getSearchResults(keyword, pageNumber)
+        .then((m) =>  {
+            store.dispatch(loadedAction(m))
+        })
+  }
+}
 
 const HomePage: React.FC = () => {
 
@@ -90,7 +100,7 @@ const HomePage: React.FC = () => {
 
   const searchByTitle = () => {
     handleSearchNavigation()
-    store.dispatch(getSearchResultsAction(searchText, 1))
+    fetchResultsAction(searchText, 1)
     setSearchText('')
   }
 

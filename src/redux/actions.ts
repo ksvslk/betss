@@ -1,21 +1,28 @@
+import { IMovieResult } from "../types/IMovieResult"
+import { IResult } from "../types/IResult"
+
 export enum ACTION_TYPE {
-    SEARCH = 'MOVIES:SEARCH',
-    GET_DETAILS = 'MOVIES:GET_DETAILS',
-    REFRESH_MAIN = 'MOVIES:REFRESH_MAIN',
+    FETCHING_SEARCH = 'MOVIES:FETCHING',
+    FETCHING_MORE_RESULTS = 'MOVIES:FETCHING_MORE_RESULTS',
+    LOADED_SEARCH = 'MOVIES:LOADED',
+    LOADED_MORE_RESULTS = 'MOVIES:LOADED_MORE_RESULTS',
 }
 
-// action creators
-export const getSearchResultsAction = (keyword: string, pageNumber: number) => ({
-    type: ACTION_TYPE.SEARCH,
-    keyword: keyword,
-    pageNumber: pageNumber
+export const fetchingAction = (keyword:string) => ({
+    type: ACTION_TYPE.FETCHING_SEARCH,
+    keyword:keyword
 })
 
-export const getMovieDetailsAction = (imdbId: string) => ({
-    type: ACTION_TYPE.GET_DETAILS,
-    imdbId: imdbId
+export const loadedAction = (result:IResult | undefined) => ({
+    type: ACTION_TYPE.LOADED_SEARCH,
+    result: result
 })
 
-export const refreshMainAction = () => ({
-    type: ACTION_TYPE.REFRESH_MAIN,
+export const fetchingMoreAction = () => ({
+    type: ACTION_TYPE.FETCHING_MORE_RESULTS,
+})
+
+export const loadedMoreAction = (movies:IMovieResult[] | undefined) => ({
+    type: ACTION_TYPE.LOADED_MORE_RESULTS,
+    movies: movies
 })

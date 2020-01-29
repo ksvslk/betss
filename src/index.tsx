@@ -11,9 +11,13 @@ import { BrowserRouter } from 'react-router-dom';
 import { Switch, Route, Redirect } from 'react-router';
 import DetailPage from './screens/DetailPage';
 import SearchPage from './screens/SearchPage';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 
+container.addSingleton<IMovieRepository>(MovieRepositoryImpl, 'MovieRepository');
 
 ReactDOM.render(
+    <Provider store={store}>
     <BrowserRouter>
         <HomePage />
         <Switch>
@@ -23,7 +27,9 @@ ReactDOM.render(
                 <Redirect to="/search" />
             </Route>
         </Switch>
+        
     </BrowserRouter>
+    </Provider>
     , document.getElementById('root')
 );
 
@@ -31,5 +37,3 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
-
-container.addSingleton<IMovieRepository>(MovieRepositoryImpl, 'MovieRepository');

@@ -1,8 +1,14 @@
 import { fade, makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import '../css/App.css';
-import { ListItem, ListItemAvatar, List, Avatar, ListItemText, Divider } from '@material-ui/core';
+import { ListItem, ListItemAvatar, List, Avatar, ListItemText, Button, Container, CircularProgress, LinearProgress } from '@material-ui/core';
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { AppState } from '../redux/types';
+import MovieIcon from '@material-ui/icons/Movie';
+import store from '../redux/store';
+import { fetchingMoreAction, loadedMoreAction } from '../redux/actions';
+import { container } from 'inversify-props';
+import { IMovieRepository } from '../repository/IMovieRepository';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -73,37 +79,107 @@ const useStyles = makeStyles((theme: Theme) =>
     inline: {
       display: 'inline',
     },
+    button: {
+      width: '100%'
+    },
+    results: {
+      fontFamily: 'Goudy Bookletter 1911'
+    },
+    circ: {
+      display: 'block',
+      marginTop: '15%',
+      marginBottom: '15%',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+    },
+    imgResults: {
+      display: 'block',
+      marginBottom: '12%',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      maxWidth: 800,
+      width: '100%',
+      height: 'auto'
+    }
   }),
 );
+
+const fetchMoreResults = (keyword: string, pageNumber: number) => {
+  store.dispatch(fetchingMoreAction())
+  const repository = container.get<IMovieRepository>('MovieRepository')
+  repository.getSearchResults(keyword, pageNumber)
+    .then((m) => {
+      store.dispatch(loadedMoreAction(m?.movies))
+    }).finally(()=>{window.scrollTo(0, document.body.scrollHeight)})
+}
+
+
 const SearchPage: React.FC = () => {
+
+ 
   const classes = useStyles();
+  const state: AppState = useSelector(
+    state => {
+      return (state as AppState)
+    }
+  )
+
+  function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
   return (
     <div className={classes.grow}>
-      <List className={classes.root}>
-        <ListItem alignItems="flex-start">
-          <ListItemAvatar>
-            <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-          </ListItemAvatar>
-          <ListItemText
-            primary="Brunch this weekend?"
-            secondary={
-              <React.Fragment>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  className={classes.inline}
-                  color="textPrimary"
-                >
-                  Ali Connors
-              </Typography>
-                {" — I'll be in your neighborhood doing errands this…"}
-              </React.Fragment>
+      {state.loadingSearch ? <CircularProgress className={classes.circ} /> :
+        <List component="nav" className={classes.root}>
+          {state.moviesSearchResult?.map(movie =>
+            <ListItem divider button key={movie.imdbID.toString()} alignItems="flex-start">
+              <ListItemAvatar>
+                <Avatar alt="Poster" src={movie.Poster} />
+              </ListItemAvatar>
+              <ListItemText
+                primary={movie.Title}
+                secondary={
+                  <React.Fragment>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      className={classes.inline}
+                      color="textPrimary"
+                    >
+                      {movie.Year}
+                    </Typography>
+                    {' - ' + capitalizeFirstLetter(movie.Type)}
+                  </React.Fragment>
+                }
+              />
+            </ListItem>
+          )}
+        </List>
+      }
+      {state.loadingSearch !== true ?
+        state.totalPagesCount === 0 || state.totalPagesCount === state.currentSearchPageNumber ? <p></p> :
+          <Container>
+            {state.loadingMoreResults ? <LinearProgress variant="query" /> :
+              <Button
+                onClick={() => fetchMoreResults(state.currentSearchKeyWord, state.currentSearchPageNumber)}
+                color="primary"
+                size="large"
+                className={classes.button}
+                startIcon={<MovieIcon />}
+              >
+                More results for "{state.currentSearchKeyWord.toString()}"
+      </Button>
             }
-          />
-        </ListItem>
-        <Divider variant="inset" component="li" />
-      </List>
+
+          </Container>
+        : <p></p>
+      }
+      <div>
+        {state.loadingSearch !== true ?
+          state.moviesSearchResult?.length === 0 || state.moviesSearchResult === undefined ? <img alt="No results" className={classes.imgResults} src={require('../img/empty-result_shot.png')} /> : <p></p>
+          : <p></p>}
+      </div>
     </div>
   );
 }
