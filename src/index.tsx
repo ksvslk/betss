@@ -7,7 +7,7 @@ import 'reflect-metadata'; // Import only once
 import { IMovieRepository } from './repository/IMovieRepository';
 import MovieRepositoryImpl from './repository/movie-repository-impl';
 import HomePage from './screens/HomePage';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { Switch, Route, Redirect } from 'react-router';
 import DetailPage from './screens/DetailPage';
 import SearchPage from './screens/SearchPage';
@@ -18,7 +18,7 @@ container.addSingleton<IMovieRepository>(MovieRepositoryImpl, 'MovieRepository')
 
 ReactDOM.render(
     <Provider store={store}>
-    <BrowserRouter>
+    <HashRouter>
         <HomePage />
         <Switch>
             <Route path="/details" component={DetailPage} />
@@ -28,7 +28,7 @@ ReactDOM.render(
             </Route>
         </Switch>
         
-    </BrowserRouter>
+    </HashRouter>
     </Provider>
     , document.getElementById('root')
 );

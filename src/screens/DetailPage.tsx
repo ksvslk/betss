@@ -67,7 +67,7 @@ createStyles({
 );
 
 const fetchMovieDetails = () => {
-  const imdbID = window.location.search.substr(4)
+  const imdbID = window.location.hash.substr(13)
   store.dispatch(fetchingDetailsAction(imdbID))
   const repository = container.get<IMovieRepository>('MovieRepository')
   repository.getMovieDetailsByImdbId(imdbID)
