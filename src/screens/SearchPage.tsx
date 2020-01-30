@@ -166,7 +166,7 @@ const SearchPage: React.FC = () => {
         </List>
       }
       {state.loadingSearch !== true ?
-        state.totalPagesCount === 0 || state.totalPagesCount === state.currentSearchPageNumber ? <p></p> :
+        state.totalPagesCount === 0 || state.totalPagesCount < state.currentSearchPageNumber ? <p></p> :
           <Container>
             {state.loadingMoreResults ? <LinearProgress style={{ margin:25 }} variant="query" /> :
               <Button
@@ -177,6 +177,9 @@ const SearchPage: React.FC = () => {
                 className={classes.button}
                 startIcon={<MovieIcon />}
               >
+                {console.log('state.totalPagesCount - ' + state.totalPagesCount)}
+                {console.log('state.currentSearchPageNumber - ' + state.currentSearchPageNumber)}
+                {console.log('state.moviesSearchResult.length - ' + state.moviesSearchResult?.length)}
                 More results for "{state.currentSearchKeyWord.toString()}"
       </Button>
             }

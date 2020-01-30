@@ -51,7 +51,7 @@ export const appState = (
             const result:IResult | undefined = (action as Loaded).result
             updatedState.totalPagesCount = 0
             updatedState.moviesSearchResult = result?.movies
-            updatedState.totalPagesCount = result?.count !== undefined ? Math.ceil(result.count / 10) - 1 : 0
+            updatedState.totalPagesCount = result?.count !== undefined ? Math.ceil(result.count / 10)  : 0
             updatedState.currentSearchPageNumber = 2
             return updatedState
         case ACTION_TYPE.FETCHING_MORE_RESULTS:
