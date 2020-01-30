@@ -34,6 +34,7 @@ export default class MovieRepositoryImpl implements IMovieRepository {
     try {
       const response = await api.get(`&s=${keyword}&page=${pageNumber}`)
       if (response.status === 200) {
+        console.log(response)
         const result: IResult = {
           movies: response.data.Search,
           count: response.data.totalResults as number

@@ -43,16 +43,15 @@ export const appState = (
 
     switch (action.type) {
         case ACTION_TYPE.FETCHING_SEARCH:
+            updatedState.currentSearchPageNumber = 2
             updatedState.currentSearchKeyWord = (action as Fetching).keyword
             updatedState.loadingSearch = true
             return updatedState
         case ACTION_TYPE.LOADED_SEARCH:
             updatedState.loadingSearch = false
             const result:IResult | undefined = (action as Loaded).result
-            updatedState.totalPagesCount = 0
             updatedState.moviesSearchResult = result?.movies
             updatedState.totalPagesCount = result?.count !== undefined ? Math.ceil(result.count / 10)  : 0
-            updatedState.currentSearchPageNumber = 2
             return updatedState
         case ACTION_TYPE.FETCHING_MORE_RESULTS:
             updatedState.currentSearchPageNumber++
@@ -62,6 +61,7 @@ export const appState = (
             updatedState.loadingMoreResults = false
             const arr: IMovieResult[] | undefined = (action as LoadedMore).movies
             updatedState.moviesSearchResult?.push(...arr ?? [])
+            console.table(updatedState.moviesSearchResult)
             return updatedState
          case ACTION_TYPE.FETCHING_DETAILS:
             updatedState.loadingDetails = true

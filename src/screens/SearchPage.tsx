@@ -137,11 +137,13 @@ const SearchPage: React.FC = () => {
   }
 
   return (
+
+
     <div className={classes.grow}>
       {state.loadingSearch ? <CircularProgress className={classes.circ} /> :
         <List component="nav" className={classes.root}>
-          {state.moviesSearchResult?.map(movie =>
-            <ListItem onClick={() => navigateToDetails(movie.imdbID)} divider button key={movie.imdbID.toString()+Date.now()} alignItems="flex-start">
+          {state.moviesSearchResult?.map((movie, index) =>
+            <ListItem onClick={() => navigateToDetails(movie.imdbID)} divider button key={movie.imdbID.toString()+index} alignItems="flex-start">
               <ListItemAvatar>
                 <Avatar alt="Poster" src={movie.Poster} />
               </ListItemAvatar>
